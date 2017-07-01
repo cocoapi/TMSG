@@ -1,20 +1,20 @@
 #Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+기본적인 3d 3인칭 슈터 게임을 목표로 개발. 
+화면상엔 PC(플레이어 캐릭터)와 EC(적 캐릭터) 두 개만 출력이 되며, 
+맵은 평지로 이루어진 박스형태로 구성된 단순한 형태의 3D TPS 게임을 목표로 둠. 
 
 #Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+1.	visualstudio를 통해 팀 탐색기를 이용 리포지토리설정 및 git 설치
+2.	각자의 브랜치와 프로젝트를 생성.(TMSG프로젝트는 메인프로젝트입니다.)
+3.	빌드 및 테스트 후 푸쉬
+4.	매주 단위로 각자 코드리뷰를 하도록 하겠습니다.
 
 #Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+우선적으로 각자 라이브러리를 만들고 라이브러리를 메인솔루션을 통해 인클루드해서 사용할 계획이므로, 각자의 프로젝트 생성 후, DLL파일 및 Lib파일을 생성해,
+개별적으로 테스트 후, 해당 라이브러리를 깃에 올리는 식으로 진행할 예정
 
 #Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+가급적이면 깃에 푸쉬를 자주 해주시기 바라며, 푸쉬되어있는 항목의 경우 각자 코멘트를 통해 코드를 서로 확인하도록 합시다.
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+#reference
+https://rogerdudler.github.io/git-guide/index.ko.html
