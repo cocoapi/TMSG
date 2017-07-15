@@ -2,6 +2,35 @@
 #include "Headers.h"
 using namespace std;
 
+class Bullet {
+public:
+	int curb;
+	int maxb;
+	char* effect;
+	char* name;
+	XMVECTOR speed;
+};
+
+class Equip {
+public:
+	//	model;
+	char* name;
+	int def, pow;
+	enum category {
+		WEAPON,
+		ARMOR
+	};
+	category cat;
+};
+
+class Bomb {
+public:
+	char* name;
+	int pow;
+	//	range;
+};
+
+
 class Character
 {
 private:
@@ -9,7 +38,7 @@ private:
 	int Pow;
 	int Def;
 	Bullet Bul;
-	directx~~ *model;
+//	directx~~ *model;
 	XMVECTOR position;
 	Equip Weapon;
 	Equip Armor;
@@ -31,10 +60,10 @@ public:
 	{
 		Pow = nowPow;
 	}
-	void SetBul(Bullet B)
-	{
-		Bul = B;
-	}
+//	void SetBul(Bullet B)
+//	{
+//		Bul = B;
+//	}
 	void SetEquip_W(Equip E)
 	{
 		if (E.cat == 0)
@@ -64,32 +93,4 @@ public:
 		else
 			HP -= EnemyPow;
 	}
-};
-
-class Bullet {
-public:
-	int curb;
-	int maxb;
-	char* effect;
-	char* name;
-	XMVECTOR speed;
-};
-
-class Equip {
-public:
-	model;
-	char* name;
-	int def, pow;
-	enum category {
-		WEAPON,
-		ARMOR
-	};
-	category cat;
-};
-
-class Bomb {
-public:
-	char* name;
-	int pow;
-	range;
 };

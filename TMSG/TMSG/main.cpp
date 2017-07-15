@@ -6,7 +6,14 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 bool initDevice(DXGI_SWAP_CHAIN_DESC&, HWND&);
-bool createDevice(D3D_FEATURE_LEVEL&, DXGI_SWAP_CHAIN_DESC&);
+HRESULT createDevice(D3D_FEATURE_LEVEL&, DXGI_SWAP_CHAIN_DESC&, IDXGISwapChain*, ID3D11Device*, D3D_FEATURE_LEVEL&, ID3D11DeviceContext*);
+
+IDXGISwapChain* ppSwapChain;
+ID3D11Device* ppDevice;
+D3D_FEATURE_LEVEL FeatureLevel;
+ID3D11DeviceContext* ppImmediateContext;
+
+
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
 {
@@ -46,6 +53,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 	}
 
 	initDevice(sd, hwnd);
+	createDevice(FeatureLevels, sd, ppSwapChain, ppDevice, FeatureLevel, ppImmediateContext);
 
 	ShowWindow(hwnd, nCmdShow);
 
@@ -97,12 +105,17 @@ bool initDevice(DXGI_SWAP_CHAIN_DESC& sd, HWND& hwnd) {
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
+	return true;
 }
 
 
-bool createDevice(
+HRESULT createDevice(
 	D3D_FEATURE_LEVEL &FeatureLevels,
-	DXGI_SWAP_CHAIN_DESC& sd
+	DXGI_SWAP_CHAIN_DESC& sd,
+	IDXGISwapChain* g_pSwapChain,
+	ID3D11Device* g_pd3dDevice,
+	D3D_FEATURE_LEVEL& FeatureLevel,
+	ID3D11DeviceContext* g_pImmediateContext
 ) {
 	HRESULT hr = S_OK;
 
@@ -119,6 +132,8 @@ bool createDevice(
 		&FeatureLevel,
 		&g_pImmediateContext)))
 	{
+		hr = ERROR;
 		return hr;
 	}
+	return hr;
 }
