@@ -150,21 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mainclass.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="DeviceResources.h" />
-    <ClInclude Include="dxstdafx.h" />
-    <ClInclude Include="HEADERS.h" />
-    <ClInclude Include="Mainclass.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="PersonaVShader.cso" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,79 +1,79 @@
-//// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-//// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-//// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//// PARTICULAR PURPOSE.
-////
-//// Copyright (c) Microsoft Corporation. All rights reserved
+#ifndef UNICODE
+#define UNICODE
+#endif 
 
+#include <windows.h>
 
-//-----------------------------------------------------------------------------
-// File: Cube.cpp
-//
-// Desktop app that renders a spinning, colorful cube.
-//
-//-----------------------------------------------------------------------------
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-
-//-----------------------------------------------------------------------------
-// Includes
-//-----------------------------------------------------------------------------
-#include "dxstdafx.h"
-#include "resource.h"
-
-#include <string>
-#include <memory>
-
-#include "DeviceResources.h"
-#include "Renderer.h"
-#include "MainClass.h"
-
-//-----------------------------------------------------------------------------
-// Main function: Creates window, calls initialization functions, and hosts
-// the render loop.
-//-----------------------------------------------------------------------------
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
 {
-	HRESULT hr = S_OK;
+	// Register the window class.
+	const wchar_t CLASS_NAME[] = L"Sample Window Class";
 
-	// Enable run-time memory check for debug builds.
-#if defined(DEBUG) | defined(_DEBUG)
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
+	WNDCLASS wc = {};
 
-	// Begin initialization.
+	wc.lpfnWndProc = WindowProc;
+	wc.hInstance = hInstance;
+	wc.lpszClassName = CLASS_NAME;
 
-	// Instantiate the window manager class.
-	std::shared_ptr<MainClass> winMain = std::shared_ptr<MainClass>(new MainClass());
-	// Create a window.
-	hr = winMain->CreateDesktopWindow();
+	RegisterClass(&wc);
 
-	if (SUCCEEDED(hr))
+	// Create the window.
+
+	HWND hwnd = CreateWindowEx(
+		0,                              // Optional window styles.
+		CLASS_NAME,                     // Window class
+		L"Learn to Program Windows",    // Window text
+		WS_OVERLAPPEDWINDOW,            // Window style
+
+										// Size and position
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+
+		NULL,       // Parent window    
+		NULL,       // Menu
+		hInstance,  // Instance handle
+		NULL        // Additional application data
+	);
+
+	if (hwnd == NULL)
 	{
-		// Instantiate the device manager class.
-		std::shared_ptr<DeviceResources> deviceResources = std::shared_ptr<DeviceResources>(new DeviceResources());
-		// Create device resources.
-		deviceResources->CreateDeviceResources();
-
-		// Instantiate the renderer.
-		std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(deviceResources));
-		renderer->CreateDeviceDependentResources();
-
-		// We have a window, so initialize window size-dependent resources.
-		deviceResources->CreateWindowResources(winMain->GetWindowHandle());
-		renderer->CreateWindowSizeDependentResources();
-
-		// Go full-screen.
-		deviceResources->GoFullScreen();
-
-		// Whoops! We resized the "window" when we went full-screen. Better
-		// tell the renderer.
-		renderer->CreateWindowSizeDependentResources();
-
-		// Run the program.
-		hr = winMain->Run(deviceResources, renderer);
+		return 0;
 	}
 
-	// Cleanup is handled in destructors.
-	return hr;
+	ShowWindow(hwnd, nCmdShow);
+
+	// Run the message loop.
+
+	MSG msg = {};
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	return 0;
 }
 
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hwnd, &ps);
+
+		FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+
+		EndPaint(hwnd, &ps);
+	}
+	return 0;
+
+	}
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
