@@ -5,6 +5,8 @@
 #include "Headers.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+bool initDevice(DXGI_SWAP_CHAIN_DESC&, HWND&);
+bool createDevice(D3D_FEATURE_LEVEL&, DXGI_SWAP_CHAIN_DESC&);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
 {
@@ -12,6 +14,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 	const wchar_t CLASS_NAME[] = L"Sample Window Class";
 
 	WNDCLASS wc = {};
+	DXGI_SWAP_CHAIN_DESC sd;
+	D3D_FEATURE_LEVEL FeatureLevels = D3D_FEATURE_LEVEL_11_0;
 
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
@@ -40,6 +44,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 	{
 		return 0;
 	}
+
+	initDevice(sd, hwnd);
 
 	ShowWindow(hwnd, nCmdShow);
 
@@ -76,4 +82,43 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+bool initDevice(DXGI_SWAP_CHAIN_DESC& sd, HWND& hwnd) {
+	ZeroMemory(&sd, sizeof(sd));
+	sd.BufferCount = 1;
+	sd.BufferDesc.Width = 640;
+	sd.BufferDesc.Height = 480;
+	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Denominator = 1;
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.OutputWindow = hwnd;
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
+	sd.Windowed = TRUE;
+}
+
+
+bool createDevice(
+	D3D_FEATURE_LEVEL &FeatureLevels,
+	DXGI_SWAP_CHAIN_DESC& sd
+) {
+	HRESULT hr = S_OK;
+
+	if (FAILED(hr = D3D11CreateDeviceAndSwapChain(NULL,
+		D3D_DRIVER_TYPE_REFERENCE,
+		NULL,
+		0,
+		&FeatureLevels,
+		1,
+		D3D11_SDK_VERSION,
+		&sd,
+		&g_pSwapChain,
+		&g_pd3dDevice,
+		&FeatureLevel,
+		&g_pImmediateContext)))
+	{
+		return hr;
+	}
 }
