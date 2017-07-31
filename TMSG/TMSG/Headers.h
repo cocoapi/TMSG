@@ -8,4 +8,5 @@
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
+#include <dxgi.h>
 using namespace DirectX;

@@ -5,8 +5,9 @@
 #include "Headers.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-bool initDevice(DXGI_SWAP_CHAIN_DESC&, HWND&);
+void initDevice(DXGI_SWAP_CHAIN_DESC&, HWND&);
 HRESULT createDevice(D3D_FEATURE_LEVEL&, DXGI_SWAP_CHAIN_DESC&, IDXGISwapChain*, ID3D11Device*, D3D_FEATURE_LEVEL&, ID3D11DeviceContext*);
+HRESULT initRTV(ID3D11RenderTargetView *, ID3D11Texture2D *);
 void Render();
 
 IDXGISwapChain* ppSwapChain = NULL;
@@ -24,7 +25,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 	WNDCLASS wc = {};
 	DXGI_SWAP_CHAIN_DESC sd;
 	D3D_FEATURE_LEVEL FeatureLevels = D3D_FEATURE_LEVEL_11_0;
-
+	ID3D11Texture2D *backBuf = NULL;
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = CLASS_NAME;
@@ -40,7 +41,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 		WS_OVERLAPPEDWINDOW,            // Window style
 
 										// Size and position
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		CW_USEDEFAULT, CW_USEDEFAULT, 640, 480,
 
 		NULL,       // Parent window    
 		NULL,       // Menu
@@ -54,7 +55,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 	}
 
 	initDevice(sd, hwnd);
-	createDevice(FeatureLevels, sd, ppSwapChain, ppDevice, FeatureLevel, ppImmediateContext);
+	if (ERROR == createDevice(FeatureLevels, sd, ppSwapChain, ppDevice, FeatureLevel, ppImmediateContext)) {
+		MessageBox(hwnd, L"CREATEDEVICE ERROR!!", L"ERROR", MB_OK);
+		return 0;
+	}
+	if (ERROR == initRTV(pRenderTargetView, backBuf)) {
+		MessageBox(hwnd, L"RENDERTAGETVIEW ERROR!!", L"ERROR", MB_OK);
+		return 0;
+	}
 
 	ShowWindow(hwnd, nCmdShow);
 
@@ -95,7 +103,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-bool initDevice(DXGI_SWAP_CHAIN_DESC& sd, HWND& hwnd) {
+void initDevice(DXGI_SWAP_CHAIN_DESC& sd, HWND& hwnd) {
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1;
 	sd.BufferDesc.Width = 640;
@@ -108,7 +116,6 @@ bool initDevice(DXGI_SWAP_CHAIN_DESC& sd, HWND& hwnd) {
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
-	return true;
 }
 
 
@@ -138,6 +145,21 @@ HRESULT createDevice(
 		hr = ERROR;
 		return hr;
 	}
+	return hr;
+}
+
+HRESULT initRTV(ID3D11RenderTargetView *RTV, ID3D11Texture2D *backBuf) {
+	HRESULT hr;
+	if (FAILED(hr = ppSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+		reinterpret_cast<void**>(&backBuf)))) {
+		hr = ERROR;
+		return hr;
+	}
+	if (FAILED(hr = ppDevice->CreateRenderTargetView(backBuf, 0, &RTV))) {
+		hr = ERROR;
+		return hr;
+	}
+	backBuf->Release();
 	return hr;
 }
 
