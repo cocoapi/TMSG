@@ -78,13 +78,13 @@ public:
 	{
 		Wea = W;
 	}
-	void SetEquip_A(Armor A)
+	void SetEquip_A(Armor &Ar)
 	{
-		Arm = A;
+		//Arm = A;
 	}
-	void SetEquip_B(Bomb B)
+	void SetEquip_B(Bomb Bo)
 	{
-		Bom = B;
+		Bom = Bo;
 	}
 
 	// 전투시 함수
