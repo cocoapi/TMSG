@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 #include "Headers.h"
 using namespace std;
 
@@ -11,16 +12,20 @@ public:
 	XMVECTOR speed;
 };
 
-class Equip {
+class Weapon {
 public:
 	//	model;
 	char* name;
 	int def, pow;
-	enum category {
-		WEAPON,
-		ARMOR
-	};
-	category cat;
+	float firerate, reloadtime;
+};
+
+class Armor {
+public:
+	//	model;
+	char* name;
+	int def, pow;
+	XMVECTOR movespeed;
 };
 
 class Bomb {
@@ -38,13 +43,18 @@ private:
 	int Pow;
 	int Def;
 	Bullet Bul;
-//	directx~~ *model;
+	//	directx~~ *model;
 	XMVECTOR position;
-	Equip Weapon;
-	Equip Armor;
+	Weapon Wea;
+	Armor Arm;
 	Bomb Bom;
+	time_t cooltime;
+	enum status {
+		normal, reloading, evasion, died
+	};
+	status sta;
 public:
-	Character(int a, int b, int c) : HP(a), Pow(b), Def(c) {}
+	Character(int a, int b, int c) : HP(a), Pow(b), Def(c), cooltime(NULL), sta(normal) {}
 	~Character() {}
 
 	// 값 초기화 함수
@@ -60,23 +70,17 @@ public:
 	{
 		Pow = nowPow;
 	}
-//	void SetBul(Bullet B)
-//	{
-//		Bul = B;
-//	}
-	void SetEquip_W(Equip E)
+	//	void SetBul(Bullet B)
+	//	{
+	//		Bul = B;
+	//	}
+	void SetEquip_W(Weapon W)
 	{
-		if (E.cat == 0)
-			Weapon = E;
-		else
-			cout << "That's not Weapon." << endl;
+		Wea = W;
 	}
-	void SetEquip_A(Equip E)
+	void SetEquip_A(Armor A)
 	{
-		if (E.cat == 1)
-			Armor = E;
-		else
-			cout << "That's not Armor." << endl;
+		Arm = A;
 	}
 	void SetEquip_B(Bomb B)
 	{
@@ -88,9 +92,57 @@ public:
 	void Damaged(int EnemyPow)
 	{
 		EnemyPow = EnemyPow - Def;
-		if (EnemyPow < 1) // 최소데미지 1
+		if (sta == evasion)
+			return;
+		else if (EnemyPow < 1) // 최소데미지 1
 			HP--;
 		else
 			HP -= EnemyPow;
+
+		if (HP <= 0)
+			sta = died;
+	}
+
+	void Shot()
+	{
+		if (cooltime < time(NULL) && Bul.curb != 0 && sta == normal) // 총에 따른 연사속도를 가지고 사격간격을 맞출 필요성이 있음. 
+		{
+			/* 총알을 쏘아내는 부분 구현 필요 */
+			Bul.curb--;
+			cooltime = time(NULL) + Wea.firerate;
+		}
+	}
+
+	void Reload()
+	{
+		sta = reloading;
+		cooltime = time(NULL) + Wea.reloadtime;
+		/* 리로딩 모션 */
+	}
+
+	void Status_check() // reloading 상태일때 normal상태로 돌리기위해 만들었지만 이후 추가될 상태에 따라 더 추가될수도 있음.
+	{
+		if (sta == reloading)
+		{
+			if (cooltime < time(NULL))
+				sta = normal;
+		}
+		else if (sta == evasion)
+		{
+			if (cooltime < time(NULL))
+				sta = normal;
+		}
+	}
+
+	void Move()
+	{
+		//	position = position + 1 + Arm.movespeed; // 기본 이동속도 1 + Armor의 movespeed
+	}
+
+	void Evasion()
+	{
+		sta = evasion;
+		cooltime = time(NULL) + 1;
+		//	position = position + 3
 	}
 };
