@@ -7,18 +7,19 @@
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 bool initDevice(DXGI_SWAP_CHAIN_DESC&, HWND&);
 HRESULT createDevice(D3D_FEATURE_LEVEL&, DXGI_SWAP_CHAIN_DESC&, IDXGISwapChain*, ID3D11Device*, D3D_FEATURE_LEVEL&, ID3D11DeviceContext*);
+void Render();
 
-IDXGISwapChain* ppSwapChain;
-ID3D11Device* ppDevice;
+IDXGISwapChain* ppSwapChain = NULL;
+ID3D11Device* ppDevice = NULL;
 D3D_FEATURE_LEVEL FeatureLevel;
-ID3D11DeviceContext* ppImmediateContext;
-
+ID3D11DeviceContext* ppImmediateContext = NULL;
+ID3D11RenderTargetView* pRenderTargetView = NULL;
 
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
 {
 	// Register the window class.
-	const wchar_t CLASS_NAME[] = L"Sample Window Class";
+	const wchar_t CLASS_NAME[] = L"TMSG";
 
 	WNDCLASS wc = {};
 	DXGI_SWAP_CHAIN_DESC sd;
@@ -35,7 +36,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 	HWND hwnd = CreateWindowEx(
 		0,                              // Optional window styles.
 		CLASS_NAME,                     // Window class
-		L"Learn to Program Windows",    // Window text
+		L"TMSG",    // Window text
 		WS_OVERLAPPEDWINDOW,            // Window style
 
 										// Size and position
@@ -60,10 +61,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 	// Run the message loop.
 
 	MSG msg = {};
-	while (GetMessage(&msg, NULL, 0, 0))
+	while (WM_QUIT != msg.message)
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			//Render();
+		}
 	}
 
 	return 0;
@@ -78,16 +86,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_PAINT:
-	{
 		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hwnd, &ps);
-
-		FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
+		HDC hdc;
+		hdc = BeginPaint(hwnd, &ps);
 		EndPaint(hwnd, &ps);
-	}
-	return 0;
-
+		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -136,4 +139,12 @@ HRESULT createDevice(
 		return hr;
 	}
 	return hr;
+}
+
+void Render()
+{
+	// Just clear the backbuffer
+	float ClearColor[4] = { 1.0f, 5.0f, 1.0f, 0.0f }; //red,green,blue,alpha
+	ppImmediateContext->ClearRenderTargetView(pRenderTargetView, ClearColor);
+	ppSwapChain->Present(0, 0);
 }
