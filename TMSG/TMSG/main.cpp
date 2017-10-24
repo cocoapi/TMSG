@@ -231,7 +231,7 @@ void makeView(D3D11_VIEWPORT *vp) {
 void Render()
 {
 	// Just clear the backbuffer
-	ppImmediateContext->ClearRenderTargetView(pRenderTargetView, (const FLOAT*)(&Colors::Black));
+	ppImmediateContext->ClearRenderTargetView(pRenderTargetView, (const FLOAT*)(&Colors::White));
 	ppSwapChain->Present(0, 0);
 }
 
