@@ -14,7 +14,7 @@ void GT::Tick() {
 		return;
 	}
 	else {
-		QueryPerformanceFrequency((LARGE_INTEGER*)&mCurrTime);
+		QueryPerformanceCounter((LARGE_INTEGER*)&mCurrTime);
 
 		mDeltaTime = (mCurrTime - mPrevTime) * mSecondsPerCount;
 
@@ -29,10 +29,44 @@ void GT::Tick() {
 
 void GT::Reset() {
 	_int64 resetTime;
-	QueryPerformanceFrequency((LARGE_INTEGER*)&resetTime);
+	QueryPerformanceCounter((LARGE_INTEGER*)&resetTime);
 
 	mBaseTime = resetTime;
 	mPrevTime = resetTime;
 	mStopTime = 0;
 	mStopped = false;
+}
+
+void GT::Stop() {
+	if (!mStopped) {
+		_int64 currTime;
+		QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
+
+		mStopTime = currTime;
+		mStopped = true;
+	}
+}
+
+void GT::Start() {
+	_int64 currTime;
+	QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
+	
+	if (mStopped) {
+		//일시정지시간 증가
+		mPausedTime += (currTime - mStopTime);
+
+		//프레임체크에 사용할 이전시간 값을 재시작하는 현재 시간으로 재 초기화
+		mPrevTime = currTime;
+		mStopTime = 0;
+		mStopped = false;
+	}
+}
+
+float GT::TotalTime() const {
+	if (mStopped) {
+		return (float)((mStopTime - mPausedTime)) - mBaseTime * mSecondsPerCount;
+	}
+	else {
+		return (float)(((mCurrTime - mPausedTime) - mBaseTime)*mSecondsPerCount);
+	}
 }
