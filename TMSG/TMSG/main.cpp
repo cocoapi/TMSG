@@ -49,7 +49,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 		CLASS_NAME,                     // Window class
 		L"TMSG",    // Window text
 		WS_OVERLAPPEDWINDOW,            // Window style
-
 										// Size and position
 		CW_USEDEFAULT, CW_USEDEFAULT, CLIENTWIDTH, CLIENTHEIGHT,
 

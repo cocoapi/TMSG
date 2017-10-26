@@ -9,4 +9,5 @@
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
 #include <dxgi.h>
+#include "Utility.h"
 using namespace DirectX;
