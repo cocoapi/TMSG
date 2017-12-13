@@ -68,6 +68,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 		MessageBox(hwnd, L"CREATEDEVICE ERROR!!", L"ERROR", MB_OK);
 		return 0;
 	}
+
 	if (E_FAIL == initRTV(ppSwapChain, &pRenderTargetView)) {
 		MessageBox(hwnd, L"RENDERTAGETVIEW ERROR!!", L"ERROR", MB_OK);
 		return 0;
